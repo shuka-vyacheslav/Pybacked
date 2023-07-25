@@ -1,6 +1,5 @@
 from binascii import hexlify, unhexlify
 from dataclasses import dataclass
-from pydoc import stripid
 from typing import List
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
@@ -46,7 +45,7 @@ class Encoder:
         """
         return [
             Share(index=i, hex=hexlify(h))
-            for i, h in Shamir.split(*shares_amount, self.__key, ssss=True)
+            for i, h in Shamir.split(*shares_amount, self.__key, ssss=False)
         ]
 
     def encrypt_data(self) -> bytes:
@@ -59,3 +58,50 @@ class Encoder:
         cipher = AES.new(self.__key, AES.MODE_EAX)
         ct, tag = cipher.encrypt(self.data), cipher.digest()
         return hexlify(cipher.nonce + tag + ct)
+
+
+class Decoder:
+    """
+    A class for decrypting data using Shamir secret sharing and AES.
+
+    Attributes:
+        shares (List[Share]): A list of Share objects containing the shares of the secret.
+    """
+
+    def __init__(self, shares: List[Share]) -> None:
+        self.shares = shares
+
+    def _shamir_combine(self) -> bytes:
+        """
+        Combines the shares in a key using Shamir's secret sharing algorithm.
+
+        Returns:
+            bytes: The original secret key used for AES decryption.
+        """
+        return Shamir.combine(
+            [(share.index, unhexlify(share.hex)) for share in self.shares], ssss=False
+        )
+
+    def decrypt_data(self, encrypted_data: bytes) -> bytes | None:
+        """
+        Decrypts the data using AES.
+
+        Args:
+            encrypted_data (bytes): The encrypted data in hexadecimal format (nonce + tag + ciphertext).
+
+        Returns:
+            bytes: The original decrypted data.
+        """
+        key = self._shamir_combine()
+        encrypted_data = unhexlify(encrypted_data)
+        nonce, tag, ciphertext = (
+            encrypted_data[:16],
+            encrypted_data[16:32],
+            encrypted_data[32:],
+        )
+        cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
+        try:
+            data = cipher.decrypt_and_verify(ciphertext, tag)
+        except ValueError:
+            return None
+        return data
