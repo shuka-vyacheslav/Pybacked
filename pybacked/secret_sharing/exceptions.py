@@ -1,0 +1,2 @@
+class NotValidKeyError(Exception):
+    pass

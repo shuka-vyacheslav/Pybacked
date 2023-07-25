@@ -5,6 +5,8 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Protocol.SecretSharing import Shamir
 
+from aes import aes_encrypt, aes_decrypt
+
 
 @dataclass
 class Share:
@@ -55,9 +57,7 @@ class Encoder:
         Returns:
             bytes: The encrypted data in hexadecimal format.
         """
-        cipher = AES.new(self.__key, AES.MODE_EAX)
-        ct, tag = cipher.encrypt(self.data), cipher.digest()
-        return hexlify(cipher.nonce + tag + ct)
+        return aes_encrypt(self.data, self.__key)
 
 
 class Decoder:
@@ -93,15 +93,5 @@ class Decoder:
             bytes: The original decrypted data.
         """
         key = self._shamir_combine()
-        encrypted_data = unhexlify(encrypted_data)
-        nonce, tag, ciphertext = (
-            encrypted_data[:16],
-            encrypted_data[16:32],
-            encrypted_data[32:],
-        )
-        cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
-        try:
-            data = cipher.decrypt_and_verify(ciphertext, tag)
-        except ValueError:
-            return None
+        data = aes_decrypt(encrypted_data, key)
         return data
