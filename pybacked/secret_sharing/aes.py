@@ -7,7 +7,6 @@ from Crypto.Random import get_random_bytes
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 
-
 def hash_password(password: str) -> bytes:
     """
     Hashes a password using PBKDF2 and SHA-512.

@@ -5,7 +5,6 @@ from pybacked.secret_sharing.aes import aes_decrypt, aes_encrypt, hash_password
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 
-
 class TestAES(unittest.TestCase):
     def test_hash_password(self):
         # Test password hashing

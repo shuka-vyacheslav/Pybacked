@@ -1,11 +1,11 @@
-from binascii import hexlify, unhexlify
+from binascii import hexlify, unhexlify, Error
 from dataclasses import dataclass
 from typing import List
-from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Protocol.SecretSharing import Shamir
 
-from aes import aes_encrypt, aes_decrypt
+from pybacked.secret_sharing.aes import aes_encrypt, aes_decrypt
+from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 
 @dataclass
@@ -78,9 +78,11 @@ class Decoder:
         Returns:
             bytes: The original secret key used for AES decryption.
         """
-        return Shamir.combine(
-            [(share.index, unhexlify(share.hex)) for share in self.shares], ssss=False
-        )
+        try:
+            key = [(share.index, unhexlify(share.hex)) for share in self.shares]
+        except Error:
+            raise NotValidKeyError
+        return Shamir.combine(key, ssss=False)
 
     def decrypt_data(self, encrypted_data: bytes) -> bytes | None:
         """
