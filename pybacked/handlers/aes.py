@@ -32,7 +32,7 @@ def aes_encrypt(data: bytes, key: bytes) -> bytes:
     Returns:
         bytes: The encrypted data in hexadecimal format (nonce + tag + ciphertext).
     """
-    cipher = AES.new(key, AES.MODE_EAX)
+    cipher = AES.new(key, AES.MODE_GCM)
     nonce = cipher.nonce
     ciphertext, tag = cipher.encrypt_and_digest(data)
     return hexlify(nonce + tag + ciphertext)
@@ -58,7 +58,7 @@ def aes_decrypt(encrypted_data: bytes, key: bytes) -> bytes:
         encrypted_data[16:32],
         encrypted_data[32:],
     )
-    cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
     try:
         data = cipher.decrypt_and_verify(ciphertext, tag)
     except ValueError:

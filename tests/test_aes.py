@@ -1,7 +1,7 @@
 import unittest
 from Crypto.Random import get_random_bytes
 
-from pybacked.secret_sharing.aes import aes_decrypt, aes_encrypt, hash_password
+from pybacked.handlers.aes import aes_decrypt, aes_encrypt, hash_password
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 

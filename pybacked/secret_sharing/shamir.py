@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from typing import List
 from Crypto.Random import get_random_bytes
 from Crypto.Protocol.SecretSharing import Shamir
+from pydantic import BaseModel
 
-from pybacked.secret_sharing.aes import aes_encrypt, aes_decrypt
+from pybacked.handlers.aes import aes_encrypt, aes_decrypt
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 
-@dataclass
-class Share:
+class Share(BaseModel):
     """
     Represents the share of the secret received after splitting or from the user.
 
