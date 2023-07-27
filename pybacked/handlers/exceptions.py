@@ -1,0 +1,2 @@
+class NotValidSharesError(Exception):
+    pass

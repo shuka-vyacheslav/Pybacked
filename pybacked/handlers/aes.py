@@ -2,7 +2,6 @@ from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA512
 from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Random import get_random_bytes
 
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
@@ -17,7 +16,7 @@ def hash_password(password: str) -> bytes:
     Returns:
         bytes: The hashed password.
     """
-    salt = get_random_bytes(16)
+    salt = unhexlify(b"EB029079C1019536B662391BC67B20AC")  # TODO: get salt from id
     return PBKDF2(password, salt, 16, count=1_000_000, hmac_hash_module=SHA512)
 
 

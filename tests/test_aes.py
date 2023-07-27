@@ -22,7 +22,7 @@ class TestAES(unittest.TestCase):
         encrypted_data = aes_encrypt(data, key)
         self.assertIsInstance(encrypted_data, bytes)
 
-        decrypted_data = aes_decrypt(encrypted_data, key)
+        decrypted_data = aes_decrypt(encrypted_data, hash_password(password))
         self.assertEqual(decrypted_data, data)
 
     def test_aes_decrypt_with_invalid_key(self):
