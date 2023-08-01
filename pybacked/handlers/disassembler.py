@@ -8,8 +8,18 @@ from pybacked.handlers.exceptions import NotValidSharesError
 
 
 class Disassembler:
-    def __init__(self, shares: List[dict]) -> None:
-        self.shares = [ShareModel(**share) for share in shares]
+    def __init__(self, shares: List[str]) -> None:
+        """
+        Initializes the Disassembler with the received shares and reconstructs the data containers.
+
+        Args:
+            shares (List[str]): A list of strings representing the received shares in JSON format.
+
+        Raises:
+            NotValidSharesError: If the received shares are not valid for reconstruction.
+        """
+        self.shares = [json.loads(share) for share in shares]
+        self.shares = [ShareModel(**share) for share in self.shares]
         if not self.check_shares():
             raise NotValidSharesError
         self.__containers = self._decrypt_shares()
@@ -22,7 +32,7 @@ class Disassembler:
             shares (List[Header]): A list of Header objects representing the received shares.
 
         Returns:
-            bool: True if all the shares have the same ID and the number of shares is equal to the threshold;
+            bool: True if all the shares have the same ID and the number of shares is more or equal to the threshold;
             False otherwise.
         """
         if not self.shares:
@@ -40,6 +50,15 @@ class Disassembler:
         return len(self.shares) >= threshold
 
     def _decrypt_shares(self) -> Information:
+        """
+        Decrypts the received shares and reconstructs the data containers.
+
+        Returns:
+            Information: An Information object containing the reconstructed data containers.
+
+        Raises:
+            NotValidKeyError: If the decryption key is not valid for decrypting the data.
+        """
         decoder = Decoder([share.header.share for share in self.shares])
         decrypted_containers = json.loads(
             decoder.decrypt_data(self.shares[0].information)
@@ -47,9 +66,25 @@ class Disassembler:
         return Information.model_validate(decrypted_containers)
 
     def decrypt_container(self, password: str) -> bytes:
+        """
+        Decrypts a data container using the provided password.
+
+        Args:
+            password (str): The password used for decrypting the data container.
+
+        Returns:
+            bytes: The decrypted data container.
+
+        Raises:
+            NotValidSharesError: If the decryption of all data containers fails using the provided password.
+        """
+        salt = self.__containers.salt
         for container in self.__containers.containers:
             try:
-                return aes_decrypt(container.data, hash_password(password))
+                return aes_decrypt(
+                    encrypted_data=container.data,
+                    key=hash_password(password, salt),
+                )
             except NotValidKeyError:
                 continue
         raise NotValidSharesError

@@ -6,7 +6,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from pybacked.secret_sharing.exceptions import NotValidKeyError
 
 
-def hash_password(password: str) -> bytes:
+def hash_password(password: str, salt: bytes) -> bytes:
     """
     Hashes a password using PBKDF2 and SHA-512.
 
@@ -16,7 +16,7 @@ def hash_password(password: str) -> bytes:
     Returns:
         bytes: The hashed password.
     """
-    salt = unhexlify(b"EB029079C1019536B662391BC67B20AC")  # TODO: get salt from id
+    salt = unhexlify(salt)
     return PBKDF2(password, salt, 16, count=1_000_000, hmac_hash_module=SHA512)
 
 

@@ -84,7 +84,7 @@ class Decoder:
             raise NotValidKeyError
         return Shamir.combine(key, ssss=False)
 
-    def decrypt_data(self, encrypted_data: bytes) -> bytes | None:
+    def decrypt_data(self, encrypted_data: bytes) -> bytes:
         """
         Decrypts the data using AES.
 

@@ -1,4 +1,5 @@
 from binascii import hexlify
+from random import randrange
 from typing import List
 from Crypto.Random import get_random_bytes
 from dataclasses import dataclass
@@ -18,7 +19,7 @@ class Assembler:
     def __init__(
         self,
         shares_amount: tuple[int, int],
-        containers: tuple[ContainerData, ContainerData, ContainerData],
+        containers: tuple[ContainerData, ContainerData | None, ContainerData | None],
     ) -> None:
         """
         Constructor for the Assembler class.
@@ -34,6 +35,7 @@ class Assembler:
         self.id = hexlify(get_random_bytes(8))
         self.shares_amount = shares_amount
         self.__containers = containers
+        self.__salt = hexlify(get_random_bytes(16))
         self.information = self._encrypt_containers()
         self.encoder = Encoder(self.information.model_dump_json().encode("UTF-8"))
 
@@ -45,12 +47,24 @@ class Assembler:
             Information: An Information object containing encrypted containers.
         """
         return Information(
+            salt=self.__salt,
             containers=[
                 Container(
-                    data=aes_encrypt(container.data, hash_password(container.password))
+                    data=aes_encrypt(
+                        data=container.data,
+                        key=hash_password(
+                            password=container.password, salt=self.__salt
+                        ),
+                    )
+                )
+                if container
+                else Container(
+                    data=hexlify(
+                        get_random_bytes(randrange(3, 256))
+                    )  # TODO: calculate maximum capacity for container
                 )
                 for container in self.__containers
-            ]
+            ],
         )
 
     def _get_shares(self) -> List[Header]:

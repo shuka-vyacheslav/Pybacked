@@ -14,6 +14,7 @@ class Container(BaseModel):
 
 
 class Information(BaseModel):
+    salt: bytes
     containers: List[Container]
 
 
