@@ -3,7 +3,7 @@ from random import randrange
 from typing import List
 from Crypto.Random import get_random_bytes
 from dataclasses import dataclass
-from models import ShareModel, Information, Container, Header
+from .models import ShareModel, Information, Container, Header
 
 from pybacked.handlers.aes import aes_encrypt, hash_password
 from pybacked.secret_sharing.shamir import Encoder
@@ -60,7 +60,7 @@ class Assembler:
                 if container
                 else Container(
                     data=hexlify(
-                        get_random_bytes(randrange(3, 256))
+                        get_random_bytes(randrange(3, 128))
                     )  # TODO: calculate maximum capacity for container
                 )
                 for container in self.__containers

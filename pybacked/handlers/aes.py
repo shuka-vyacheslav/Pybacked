@@ -34,7 +34,7 @@ def aes_encrypt(data: bytes, key: bytes) -> bytes:
     cipher = AES.new(key, AES.MODE_GCM)
     nonce = cipher.nonce
     ciphertext, tag = cipher.encrypt_and_digest(data)
-    return hexlify(nonce + tag + ciphertext)
+    return hexlify(bytes(nonce) + bytes(tag) + ciphertext)
 
 
 def aes_decrypt(encrypted_data: bytes, key: bytes) -> bytes:
