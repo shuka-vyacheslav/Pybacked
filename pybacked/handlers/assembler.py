@@ -60,7 +60,7 @@ class Assembler:
                 if container
                 else Container(
                     data=hexlify(
-                        get_random_bytes(randrange(3, 128))
+                        get_random_bytes(randrange(32, 128))
                     )  # TODO: calculate maximum capacity for container
                 )
                 for container in self.__containers
