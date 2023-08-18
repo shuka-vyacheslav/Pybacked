@@ -14,10 +14,12 @@ qrcode = "^7.4.2"
 pyzbar = "^0.1.9"
 pillow = "^10.0.0"
 
-
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+install_zbar = "python -m pybacked.install"
