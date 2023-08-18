@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from typing import Optional
 import click
 from difflib import SequenceMatcher
 import qrcode
@@ -64,7 +65,9 @@ def encrypt() -> None:
     password: str = click.prompt(
         text="Password", confirmation_prompt=True, hide_input=True
     )
-    containers = [ContainerData(data=data.encode(), password=password)]
+    containers: list[Optional[ContainerData]] = [
+        ContainerData(data=data.encode(), password=password)
+    ]
     for c in range(2, 4):
         if click.confirm(
             f"Do you want to add data to hidden container №{c}? (It will create separate container with its own password)"

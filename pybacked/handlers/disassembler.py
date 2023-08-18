@@ -1,6 +1,6 @@
 import json
 from typing import List
-from models import ShareModel, Information
+from .models import ShareModel, Information
 
 from pybacked.handlers.aes import aes_decrypt, hash_password, NotValidKeyError
 from pybacked.secret_sharing.shamir import Decoder
@@ -88,3 +88,16 @@ class Disassembler:
             except NotValidKeyError:
                 continue
         raise NotValidSharesError
+
+    @staticmethod
+    def get_threshold(data: str) -> int:
+        """
+        Extract the threshold value from a serialized share model data.
+
+        Args:
+            data (str): Serialized JSON data representing the share model.
+
+        Returns:
+            int: The threshold value extracted from the share model's header.
+        """
+        return ShareModel(**json.loads(data)).header.threshold

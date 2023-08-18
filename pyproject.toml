@@ -11,6 +11,8 @@ pycryptodome = "^3.18.0"
 pydantic = "^2.1.1"
 click = "^8.1.6"
 qrcode = "^7.4.2"
+pyzbar = "^0.1.9"
+pillow = "^10.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
