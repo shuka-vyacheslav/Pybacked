@@ -17,7 +17,7 @@ def hash_password(password: str, salt: bytes) -> bytes:
         bytes: The hashed password.
     """
     salt = unhexlify(salt)
-    return PBKDF2(password, salt, 16, count=1_000_000, hmac_hash_module=SHA512)
+    return PBKDF2(password.encode(), salt, 16, count=1_000_000, hmac_hash_module=SHA512)
 
 
 def aes_encrypt(data: bytes, key: bytes) -> bytes:
